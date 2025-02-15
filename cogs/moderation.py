@@ -94,6 +94,20 @@ class Moderation(commands.Cog):
         await ctx.respond("Hang on, purging messages . . .", ephemeral=True)    
         await ctx.channel.purge(limit=amount)
 
-        
+    @bridge.bridge_command(description="Unban a user")
+    async def unban(self, ctx, userid):
+        try:
+            user = await self.client.fetch_user(int(userid))
+            guild = ctx.guild
+            await guild.unban(user)
+            embed = discord.Embed(title="Success!", description=f"Unbanned {user.name}! Tell him/her to behave properly next time!")
+            await ctx.respond(embed=embed, ephemeral=True)
+            try:
+                await user.send(embed=discord.Embed(title="Unbanned", color=discord.Colour.green(), description=f"You have been unbanned from {ctx.guild.name}! Behave properly next time."))
+            except:
+                pass
+        except:
+            embed = discord.Embed(title="Failed.", color=discord.Colour.red(), description=f"Failed to unban {user.name} . Try again." )
+            await ctx.respond(embed=embed, ephemeral=True)
 def setup(bot):
     bot.add_cog(Moderation(bot))
